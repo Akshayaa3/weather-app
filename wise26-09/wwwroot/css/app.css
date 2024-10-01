@@ -116,37 +116,6 @@ code {
     width: 350px;
     display: flex;
     align-items: center;
-    transition: transform 0.2s ease-in-out;
-}
-
-    .card:active {
-        animation: rock 0.2s ease-in-out;
-    }
-
-@keyframes rock {
-    0% {
-        transform: translateX(0);
-    }
-
-    20% {
-        transform: translateX(-5px);
-    }
-
-    40% {
-        transform: translateX(5px);
-    }
-
-    60% {
-        transform: translateX(-5px);
-    }
-
-    80% {
-        transform: translateX(5px);
-    }
-
-    100% {
-        transform: translateX(0);
-    }
 }
 
 .loading {
@@ -172,7 +141,6 @@ code {
     .weather-data p {
         margin-bottom: 5px;
     }
-
 .weather-content {
     display: flex; /* Enable flexbox layout */
     align-items: center; /* Align items vertically */

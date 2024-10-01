@@ -10,56 +10,56 @@
 <h1>Enter the city</h1>
 <input type="text" placeholder="Name of the city" @bind="city" />
 <button @onclick="FetchWeather">Get Weather</button>
-@if (showweather)
+@if( showweather)
 {
-    @if (weatherForecast == null)
-    {
-        <div class="card loading">
-            <em> </em>
-        </div>
-    }
-    else
-    {
-        <div class="card" @ref="cardElement" @onclick="HandleClick">
-            <div class="weather-content">
-                <div class="weather-icon">
-                    @if (weatherForecast.current.condition.text.Contains("Clear", StringComparison.OrdinalIgnoreCase))
-                    {
+  @if (weatherForecast == null)
+  {
+      <div class="card loading">
+          <em> </em>
+      </div>
+  }
+  else
+  {
+      <div class="card">
+          <h2>@weatherForecast.location.name</h2>
+          <div class="weather-content">
+
+           <div class="weather-icon">
+              @if (weatherForecast.current.condition.text.Contains("Clear", StringComparison.OrdinalIgnoreCase))
+              {
                         <i class="material-icons" style="font-size: 100px; color: yellow;">wb_sunny</i>
-                    }
-                    else if (weatherForecast.current.condition.text.Contains("Mist", StringComparison.OrdinalIgnoreCase))
-                    {
+              }
+              else if (weatherForecast.current.condition.text.Contains("Mist", StringComparison.OrdinalIgnoreCase))
+              {
                         <i class="material-icons" style="font-size: 100px;  ">foggy</i>
-                    }
-                    else if (weatherForecast.current.condition.text.Contains("cloudy", StringComparison.OrdinalIgnoreCase))
-                    {
+              }
+              else if (weatherForecast.current.condition.text.Contains("cloudy", StringComparison.OrdinalIgnoreCase))
+              {
                         <i class="material-icons" style="font-size: 100px; ">cloud</i>
-                    }
-                    else if (weatherForecast.current.condition.text.Contains("rain", StringComparison.OrdinalIgnoreCase))
-                    {
+              }
+              else if (weatherForecast.current.condition.text.Contains("rain" , StringComparison.OrdinalIgnoreCase))
+              {
                         <i class="material-icons" style="font-size: 100px;  ">umbrella</i>
-                    }
-                    else
-                    {
-                        <i class="material-icons" style="font-size: 100px; color:dimgray">event_busy</i>
-                    }
-                </div>
-                <div class="weather-data">
-                    <p>Temperature (C): @weatherForecast.current.temp_c</p>
-                    <p>Temperature (F): @(weatherForecast.current.temp_c * 9 / 5 + 32)</p>
-                    <p>Summary: @weatherForecast.current.condition.text</p>
-                </div>
-            </div>
-        </div>
-    }
+              }
+              else
+              {
+                  <i class="material-icons" style="font-size: 100px; color:dimgray">event_busy</i>
+              }
+           </div>
+          <div class="weather-data">
+              <p>Temperature (C): @weatherForecast.current.temp_c</p>
+              <p>Temperature (F): @(weatherForecast.current.temp_c * 9 / 5 + 32)</p>
+              <p>Summary: @weatherForecast.current.condition.text</p>
+          </div>
+          </div>
+      </div>
+  }
 }
 
 @code {
     private WeatherForecast? weatherForecast;
     private string city = string.Empty; // Property to hold the user input
     private bool showweather = false;
-    private ElementReference cardElement;
-
     private async Task FetchWeather()
     {
         string apiKey = "4f11acc30c2045ec8dd62707242609";
@@ -75,16 +75,6 @@
             Console.WriteLine($"Error fetching weather data: {ex.Message}");
         }
     }
-
-    private async Task HandleClick(MouseEventArgs e)
-    {
-        await js.InvokeVoidAsync("addElementClass", cardElement, "active");
-        await Task.Delay(200);
-        await js.InvokeVoidAsync("removeElementClass", cardElement, "active");
-    }
-
-    [Inject]
-    private IJSRuntime js { get; set; }
 
     public class WeatherForecast
     {
