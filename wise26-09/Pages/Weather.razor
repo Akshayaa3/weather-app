@@ -1,0 +1,110 @@
+﻿@page "/weather"
+@inject HttpClient Http
+
+<PageTitle>Weather</PageTitle>
+
+<h1>Weather</h1>
+
+<p>This component demonstrates fetching actual weather data from the WeatherAPI API.</p>
+
+<h1>Enter the city</h1>
+<input type="text" placeholder="Name of the city" @bind="city" />
+<button @onclick="FetchWeather">Get Weather</button>
+@if (showweather)
+{
+    @if (weatherForecast == null)
+    {
+        <div class="card loading">
+            <em> </em>
+        </div>
+    }
+    else
+    {
+        <div class="card" @ref="cardElement" @onclick="HandleClick">
+            <div class="weather-content">
+                <div class="weather-icon">
+                    @if (weatherForecast.current.condition.text.Contains("Clear", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <i class="material-icons" style="font-size: 100px; color: yellow;">wb_sunny</i>
+                    }
+                    else if (weatherForecast.current.condition.text.Contains("Mist", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <i class="material-icons" style="font-size: 100px;  ">foggy</i>
+                    }
+                    else if (weatherForecast.current.condition.text.Contains("cloudy", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <i class="material-icons" style="font-size: 100px; ">cloud</i>
+                    }
+                    else if (weatherForecast.current.condition.text.Contains("rain", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <i class="material-icons" style="font-size: 100px;  ">umbrella</i>
+                    }
+                    else
+                    {
+                        <i class="material-icons" style="font-size: 100px; color:dimgray">event_busy</i>
+                    }
+                </div>
+                <div class="weather-data">
+                    <p>Temperature (C): @weatherForecast.current.temp_c</p>
+                    <p>Temperature (F): @(weatherForecast.current.temp_c * 9 / 5 + 32)</p>
+                    <p>Summary: @weatherForecast.current.condition.text</p>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@code {
+    private WeatherForecast? weatherForecast;
+    private string city = string.Empty; // Property to hold the user input
+    private bool showweather = false;
+    private ElementReference cardElement;
+
+    private async Task FetchWeather()
+    {
+        string apiKey = "4f11acc30c2045ec8dd62707242609";
+        string apiUrl = $"https://api.weatherapi.com/v1/current.json?key={apiKey}&q={city}";
+
+        try
+        {
+            weatherForecast = await Http.GetFromJsonAsync<WeatherForecast>(apiUrl);
+            showweather = true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching weather data: {ex.Message}");
+        }
+    }
+
+    private async Task HandleClick(MouseEventArgs e)
+    {
+        await js.InvokeVoidAsync("addElementClass", cardElement, "active");
+        await Task.Delay(200);
+        await js.InvokeVoidAsync("removeElementClass", cardElement, "active");
+    }
+
+    [Inject]
+    private IJSRuntime js { get; set; }
+
+    public class WeatherForecast
+    {
+        public Location location { get; set; }
+        public Current current { get; set; }
+    }
+
+    public class Location
+    {
+        public string name { get; set; }
+    }
+
+    public class Current
+    {
+        public double temp_c { get; set; }
+        public Condition condition { get; set; }
+    }
+
+    public class Condition
+    {
+        public string text { get; set; }
+    }
+}
